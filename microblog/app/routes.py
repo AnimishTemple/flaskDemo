@@ -16,7 +16,9 @@ from urllib.parse import urlsplit
 @app.route('/index')
 @login_required
 def index():
+
     user = {'username': 'Miguel'}
+
     posts = [
         {
             'author': {'username': 'Hulk'},
@@ -27,6 +29,7 @@ def index():
             'body': 'The New York Knicks are pretty cool!'
         }
     ]
+
     return render_template('index.html', title='Home', posts=posts)
 
 
@@ -59,19 +62,37 @@ def login():
 
 @app.route('/logout')
 def logout():
+
     logout_user()
+
     return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+
     if current_user.is_authenticated:
         return redirect(url_for("index"))
+    
     form = RegistrationForm()
+
     if form.validate_on_submit():
+
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash("Congratulations, you are now a registered user!")
+
         return redirect(url_for("login"))
+    
     return render_template("register.html", title="Register", form=form)
+
+@app.route("/user/<username>")
+@login_required
+def user(username):
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+    posts = [
+        {"author": user, "body": "Test post #1"},
+        {"author": user, "body": "Test post #2"}
+    ]
+    return render_template("user.html", user=user, posts=posts)
