@@ -30,7 +30,7 @@
         {{ form.password2(size=32) }}<br>
         {% for error in form.password2.errors %}
         <span style="color: red;">[{{ error }}]</span>
-        {% end for %}
+        {% endfor %}
     </p>
     <p>
         {{ form.submit() }}
